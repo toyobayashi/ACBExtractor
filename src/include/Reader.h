@@ -13,8 +13,8 @@ public:
   Reader(unsigned char* buf, unsigned int length);
   Reader();
   ~Reader();
-  Reader(std::string filename, int _Mode, int _Prot = 64);
-  void open(std::string filename, int _Mode, int _Prot = 64);
+  Reader(std::string filename, ios_base::openmode mode);
+  void open(std::string filename, ios_base::openmode mode);
   std::streampos tell();
   Reader& seek(std::streampos at, std::streampos offset = 0);
   unsigned int readUInt32BE();

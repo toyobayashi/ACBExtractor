@@ -1,4 +1,5 @@
 #include "./include/Reader.h"
+#include <math.h>
 
 int Reader::isLittleEndian = -1;
 
@@ -49,13 +50,13 @@ Reader::~Reader() {
   if (tmpfile != "") remove(tmpfile.c_str());
 }
 
-Reader::Reader(std::string filename, int _Mode, int _Prot) {
+Reader::Reader(std::string filename, ios_base::openmode mode) {
   checkEndian();
-  open(filename, _Mode, _Prot);
+  open(filename.c_str(), mode);
 }
 
-void Reader::open(std::string filename, int _Mode, int _Prot) {
-  std::ifstream::open(filename, _Mode, _Prot);
+void Reader::open(std::string filename, ios_base::openmode mode) {
+  std::ifstream::open(filename.c_str(), mode);
   std::streampos current = tellg();
   seekg(0, std::ios::end);
   length = (unsigned int)tellg();
