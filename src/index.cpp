@@ -9,15 +9,15 @@ int main(int argc, char** argv) {
     for (int x = 1; x < argc; x++) {
       acb = new ACBExtractor(argv[x]);
 
-      if (acb->extract()) {
-        for (unsigned int i = 0; i < acb->tracklist->length; i++) {
-          cout << acb->tracklist->tracks[i].cueName.c_str() << endl;
-        }
+      if (acb->extract([](string filename, unsigned int length) -> void {
+        cout << "File: " << filename.c_str() << " Size: " << length << "\n";
+      })) {
+        cout << argv[x] << " done." << "\n\n";
       }
       delete acb;
     }
   } catch (const char* err) {
-    cout << err << endl;
+    cout << err << "\n";
     return 0;
   }
 

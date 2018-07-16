@@ -16,7 +16,7 @@ public:
 
   ACBExtractor(std::string acbFile);
 
-  bool extract();
+  bool extract(void (*callback)(std::string filename, unsigned int length));
 
   ~ACBExtractor();
 };

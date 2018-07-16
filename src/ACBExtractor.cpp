@@ -20,7 +20,7 @@ ACBExtractor::ACBExtractor(std::string acbFile) {
   delete[] awbbuf;
 }
 
-bool ACBExtractor::extract() {
+bool ACBExtractor::extract(void (*callback)(std::string filename, unsigned int length)) {
   std::string dirname, targetDir, filename;
 
 #ifdef _WIN32
@@ -95,6 +95,7 @@ bool ACBExtractor::extract() {
 #endif
       fs.open(acbFilename, std::ios::binary);
       fs.write((const char*)awbFile->files[inFiles].buf, awbFile->files[inFiles].length);
+      if (callback) callback(cueName + encodeType, awbFile->files[inFiles].length);
       fs.close();
     }
     else {
