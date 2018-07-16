@@ -1,5 +1,4 @@
 #include "./include/ACBExtractor.h"
-#include <iostream>
 #include <regex>
 
 ACBExtractor::ACBExtractor(std::string acbFile) {
