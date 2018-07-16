@@ -2,13 +2,13 @@
 #include "./UTFTable.h"
 #include "./AFSArchive.h"
 #include "./TrackList.h"
-#include <experimental/filesystem>
+// #include <experimental/filesystem>
 
 class ACBExtractor {
 private:
 
 public:
-  std::experimental::filesystem::path path;
+  std::string path;
   UTFTable* headerTable;
   TrackList* tracklist;
   AFSArchive* awbFile;

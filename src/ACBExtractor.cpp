@@ -1,6 +1,14 @@
 #include "./include/ACBExtractor.h"
+#include <iostream>
+#include <regex>
 
 ACBExtractor::ACBExtractor(std::string acbFile) {
+  std::regex re("/|\\\\");
+#ifdef _WIN32
+  acbFile = std::regex_replace(acbFile, re, "\\");
+#else
+  std::regex_replace(acbFile, re, "/");
+#endif
   path = acbFile;
   headerTable = new UTFTable(acbFile);
   tracklist = new TrackList(headerTable);
@@ -13,12 +21,33 @@ ACBExtractor::ACBExtractor(std::string acbFile) {
 }
 
 bool ACBExtractor::extract() {
-  std::experimental::filesystem::path p;
-  if (!path.is_absolute()) p = std::experimental::filesystem::canonical(path);
-  else p = path;
-  std::experimental::filesystem::path targetDir = p.replace_filename(std::experimental::filesystem::path("_acb_") += p.filename());
-  std::experimental::filesystem::create_directories(targetDir);
+  std::string dirname, targetDir, filename;
 
+#ifdef _WIN32
+  auto posw = path.find_last_of('\\');
+  if (posw == std::string::npos) {
+    dirname = ".";
+    filename = path;
+  } else {
+    dirname = path.substr(0, posw);
+    filename = path.substr(posw + 1);
+  }
+  targetDir = dirname + "\\_acb_" + filename;
+  std::string cmd = "mkdir " + targetDir;
+#else
+  auto posl = path.find_last_of('/');
+  if (posl == std::string::npos) {
+    dirname = ".";
+    filename = path;
+  } else {
+    dirname = path.substr(0, posl);
+    filename = path.substr(posl + 1);
+  }
+  targetDir = dirname + "/_acb_" + filename;
+  std::string cmd = "mkdir -p " + targetDir;
+#endif
+  
+  system(cmd.c_str());
   std::ofstream fs;
   for (unsigned int i = 0; i < tracklist->length; i++) {
     int inFiles = -1;
@@ -59,8 +88,12 @@ bool ACBExtractor::extract() {
       default:
         break;
       }
-      std::experimental::filesystem::path filename = targetDir;
-      fs.open(filename.append(cueName + encodeType), std::ios::binary);
+#ifdef _WIN32
+      std::string acbFilename = targetDir + "\\" + cueName + encodeType;
+#else
+      std::string acbFilename = targetDir + "/" + cueName + encodeType;
+#endif
+      fs.open(acbFilename, std::ios::binary);
       fs.write((const char*)awbFile->files[inFiles].buf, awbFile->files[inFiles].length);
       fs.close();
     }
