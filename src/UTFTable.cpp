@@ -80,19 +80,13 @@ UTFTable::~UTFTable() {
   delete r;
   for (unsigned int i = 0; i < header->columnLength; i++) {
     if (columns[i].columnType == UTFTable::columnType.CONSTANT || columns[i].columnType == UTFTable::columnType.CONSTANT2) {
-      if (columns[i].dataType == static_cast<unsigned char>(0x0b))
-        delete[] columns[i].data;
-      else
-        delete columns[i].data;
+      deleteVoid(columns[i]);
     }
   }
 
   for (unsigned int i = 0; i < header->rowLength; i++) {
     for (unsigned int j = 0; j < header->columnLength; j++) {
-      if (rows[i][j].dataType == static_cast<unsigned char>(0x0b))
-        delete[] rows[i][j].data;
-      else
-        delete rows[i][j].data;
+      deleteVoid(rows[i][j]);
     }
     delete[] rows[i];
   }
@@ -212,6 +206,36 @@ void UTFTable::readDataTemplate(Arg& columnOrData) {
   *data = r->readByte<T>();
   columnOrData.data = static_cast<void*>(data);
   columnOrData.length = sizeof(T);
+}
+
+template<typename Arg>
+void UTFTable::deleteVoid(Arg& columnOrData) {
+  if (columnOrData.dataType == static_cast<unsigned char>(0x0b))
+    delete[] static_cast<unsigned int*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x0a)) {
+    if (columnOrData.length > 0) delete static_cast<std::string*>(columnOrData.data);
+    else delete columnOrData.data;
+  }
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x00))
+    delete static_cast<unsigned char*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x01))
+    delete static_cast<char*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x02))
+    delete static_cast<unsigned short*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x03))
+    delete static_cast<short*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x04))
+    delete static_cast<unsigned int*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x05))
+    delete static_cast<int*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x06))
+    delete static_cast<unsigned long long*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x07))
+    delete static_cast<long long*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x08))
+    delete static_cast<float*>(columnOrData.data);
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x09))
+    delete static_cast<double*>(columnOrData.data);
 }
 
 template<typename Arg>

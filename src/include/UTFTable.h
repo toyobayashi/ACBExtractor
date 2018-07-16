@@ -50,6 +50,8 @@ private:
   void readData(unsigned char type, Arg& columnOrData);
   template<typename T, typename Arg>
   void readDataTemplate(Arg& columnOrData);
+  template<typename Arg>
+  void deleteVoid(Arg& columnOrData);
 public:
   friend class TrackList;
   friend class ACBExtractor;
