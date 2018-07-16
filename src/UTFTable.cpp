@@ -46,7 +46,7 @@ UTFTable::UTFTable(std::string acb) {
   }
 
   readHeader();
-  name = readString(header->tableNameStringOffset);
+  name = readString(header->tableNameStringOffset, nullptr);
   readColumns();
   readRows();
   
@@ -69,7 +69,7 @@ UTFTable::UTFTable(unsigned char* acb, unsigned int l) {
   }
 
   readHeader();
-  name = readString(header->tableNameStringOffset);
+  name = readString(header->tableNameStringOffset, nullptr);
   readColumns();
   readRows();
 
@@ -78,7 +78,9 @@ UTFTable::UTFTable(unsigned char* acb, unsigned int l) {
 UTFTable::~UTFTable() {
   r->close();
   delete r;
+  delete name;
   for (unsigned int i = 0; i < header->columnLength; i++) {
+    delete[] columns[i].columnName;
     if (columns[i].columnType == UTFTable::columnType.CONSTANT || columns[i].columnType == UTFTable::columnType.CONSTANT2) {
       deleteVoid(columns[i]);
     }
@@ -121,7 +123,7 @@ void UTFTable::readHeader() {
   r->seek(back);
 }
 
-std::string UTFTable::readString(std::streampos offset) {
+char* UTFTable::readString(std::streampos offset, unsigned int* outlength) {
   std::streampos back = r->tell();
   r->seek(header->stringDataOffset + 8, offset);
   unsigned int length = 0;
@@ -130,12 +132,12 @@ std::string UTFTable::readString(std::streampos offset) {
     if (r->readUInt8() == 0) break;
   }
   r->seek(header->stringDataOffset + 8, offset);
+  if (outlength) *outlength = length - 1;
   char* outstr = new char[length];
   r->read(outstr, length);
   r->seek(back);
-  std::string str = outstr;
-  delete[] outstr;
-  return str;
+
+  return outstr;
 }
 
 void UTFTable::readBinary(unsigned char* outbuf, std::streampos offset, std::streampos length) {
@@ -156,7 +158,7 @@ void UTFTable::readColumns() {
     unsigned char columnType = columnTypeAndDataType & 0xf0;
     unsigned char dataType = columnTypeAndDataType & 0x0f;
 
-    std::string columnName = readString(nameOffset);
+    char* columnName = readString(nameOffset, nullptr);
 
     columns[i].columnName = columnName;
     columns[i].dataType = dataType;
@@ -212,10 +214,8 @@ template<typename Arg>
 void UTFTable::deleteVoid(Arg& columnOrData) {
   if (columnOrData.dataType == static_cast<unsigned char>(0x0b))
     delete[] static_cast<unsigned int*>(columnOrData.data);
-  else if (columnOrData.dataType == static_cast<unsigned char>(0x0a)) {
-    if (columnOrData.length > 0) delete static_cast<std::string*>(columnOrData.data);
-    else delete columnOrData.data;
-  }
+  else if (columnOrData.dataType == static_cast<unsigned char>(0x0a))
+    delete[] static_cast<char*>(columnOrData.data);
   else if (columnOrData.dataType == static_cast<unsigned char>(0x00))
     delete static_cast<unsigned char*>(columnOrData.data);
   else if (columnOrData.dataType == static_cast<unsigned char>(0x01))
@@ -292,10 +292,10 @@ void UTFTable::readData(unsigned char type, Arg& columnOrData) {
   }
 
   case 0x0a: {
-    std::string* data = new std::string;
-    *data = readString(r->readUInt32BE());
+    unsigned int l = 0;
+    char* data = readString(r->readUInt32BE(), &l);
+    columnOrData.length = l;
     columnOrData.data = static_cast<void*>(data);
-    columnOrData.length = (unsigned int)data->size();
     break;
   }
   case 0x0b: {

@@ -30,7 +30,7 @@ TrackList::TrackList(UTFTable* utf) {
   for (unsigned int i = 0; i < cueNameTable->header->rowLength; i++) {
     acbData* str = cueNameTable->get(i, "CueName");
     nameMap[*(static_cast<unsigned short*>(cueNameTable->get(i, "CueIndex")->data))] = str ?
-      *(static_cast<std::string*>(str->data)) : "UNKNOWN";
+      std::string(static_cast<char*>(str->data)) : "UNKNOWN";
   }
 
   tracks = new track[cueTable->header->rowLength];

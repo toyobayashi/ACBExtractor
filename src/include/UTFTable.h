@@ -4,7 +4,7 @@
 #include "./Reader.h"
 
 typedef struct {
-  std::string columnName;
+  char* columnName;
   void* data;
   unsigned char dataType;
   unsigned int length;
@@ -12,7 +12,7 @@ typedef struct {
 
 typedef struct {
   unsigned char columnType;
-  std::string columnName;
+  char* columnName;
   void* data;
   unsigned char dataType;
   unsigned int length;
@@ -44,7 +44,7 @@ private:
   static acbColumnType columnType;
   Reader* r;
   void readHeader();
-  std::string readString(std::streampos offset);
+  char* readString(std::streampos offset, unsigned int* outlength);
   void readBinary(unsigned char* outbuf, std::streampos offset, std::streampos length);
   void readColumns();
   void readRows();
@@ -63,7 +63,7 @@ public:
   acbColumn* columns;
   acbRow* rows;
   
-  std::string name;
+  char* name;
   UTFTable(std::string acb);
   UTFTable(unsigned char* acb, unsigned int l);
   ~UTFTable();
