@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _ACB_UTFTABLE_H_
+#define _ACB_UTFTABLE_H_
+
 #include "./Reader.h"
 
 typedef struct {
@@ -67,3 +69,4 @@ public:
   ~UTFTable();
   acbData* get(unsigned int lineNumber, std::string columnName);
 };
+#endif // !_ACB_UTFTABLE_H_

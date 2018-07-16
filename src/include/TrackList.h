@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _ACB_TRACKLIST_H_
+#define _ACB_TRACKLIST_H_
+
 #include "./Reader.h"
 #include "./UTFTable.h"
 
@@ -24,3 +26,4 @@ public:
   TrackList(UTFTable* utf);
   ~TrackList();
 };
+#endif // !_ACB_TRACKLIST_H_

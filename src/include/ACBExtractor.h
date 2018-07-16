@@ -1,8 +1,9 @@
-#pragma once
+#ifndef _ACB_ACBEXTRACTOR_H_
+#define _ACB_ACBEXTRACTOR_H_
+
 #include "./UTFTable.h"
 #include "./AFSArchive.h"
 #include "./TrackList.h"
-// #include <experimental/filesystem>
 
 class ACBExtractor {
 private:
@@ -19,3 +20,4 @@ public:
 
   ~ACBExtractor();
 };
+#endif // !_ACB_ACBEXTRACTOR_H_

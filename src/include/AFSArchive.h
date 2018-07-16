@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _ACB_AFSARCHIVE_H_
+#define _ACB_AFSARCHIVE_H_
+
 #include "./Reader.h"
 
 typedef struct {
@@ -28,3 +30,4 @@ public:
   AFSArchive(unsigned char* awb, unsigned int l);
   ~AFSArchive();
 };
+#endif // !_ACB_AFSARCHIVE_H_

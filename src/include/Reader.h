@@ -1,5 +1,7 @@
-#pragma once
-# include <fstream>
+#ifndef _ACB_READER_H_
+#define _ACB_READER_H_
+
+#include <fstream>
 
 class Reader : public std::ifstream {
 private:
@@ -40,3 +42,4 @@ public:
   template<typename T>
   T readByte(bool isLE = false);
 };
+#endif // !_ACB_READER_H_
