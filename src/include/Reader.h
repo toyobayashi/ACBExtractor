@@ -40,6 +40,22 @@ public:
   unsigned int readUIntLE(unsigned int size);
 
   template<typename T>
-  T readByte(bool isLE = false);
+  T readByte(bool isLE = false) {
+    unsigned char buf[sizeof(T)];
+    unsigned int size = sizeof(T);
+    read((char*)buf, size);
+    if ((isLittleEndian && !isLE) || (!isLittleEndian && isLE)) {
+      unsigned char temp;
+      for (unsigned int i = 0; i < size / 2; i++) {
+        temp = buf[i];
+        buf[i] = buf[size - 1 - i];
+        buf[size - 1 - i] = temp;
+      }
+    }
+    
+    T* result = (T*)buf;
+
+    return *result;
+  }
 };
 #endif // !_ACB_READER_H_

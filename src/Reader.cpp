@@ -10,24 +10,24 @@ void Reader::checkEndian() {
   }
 }
 
-template<typename T>
-T Reader::readByte(bool isLE) {
-  unsigned char buf[sizeof(T)];
-  unsigned int size = sizeof(T);
-  read((char*)buf, size);
-  if ((isLittleEndian && !isLE) || (!isLittleEndian && isLE)) {
-    unsigned char temp;
-    for (unsigned int i = 0; i < size / 2; i++) {
-      temp = buf[i];
-      buf[i] = buf[size - 1 - i];
-      buf[size - 1 - i] = temp;
-    }
-  }
+// template<typename T>
+// T Reader::readByte(bool isLE) {
+//   unsigned char buf[sizeof(T)];
+//   unsigned int size = sizeof(T);
+//   read((char*)buf, size);
+//   if ((isLittleEndian && !isLE) || (!isLittleEndian && isLE)) {
+//     unsigned char temp;
+//     for (unsigned int i = 0; i < size / 2; i++) {
+//       temp = buf[i];
+//       buf[i] = buf[size - 1 - i];
+//       buf[size - 1 - i] = temp;
+//     }
+//   }
   
-  T* result = (T*)buf;
+//   T* result = (T*)buf;
 
-  return *result;
-}
+//   return *result;
+// }
 
 Reader::Reader(unsigned char* buf, unsigned int length) {
   checkEndian();
